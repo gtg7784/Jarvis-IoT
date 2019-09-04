@@ -6,109 +6,161 @@
  * @flow
  */
 
-import React, {Fragment} from 'react';
+import React, { Fragment, Component } from 'react';
+import { Provider } from 'mobx-react'
 import {
-  SafeAreaView,
+  Image,
   StyleSheet,
   ScrollView,
   View,
   Text,
   StatusBar,
+  TouchableOpacity
 } from 'react-native';
-
 import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  NavigationScreenOptions,
+  NavigationScreenProp,
+  createAppContainer,
+  createSwitchNavigator
+} from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
+import { createBottomTabNavigator } from 'react-navigation-tabs'
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const App = () => {
-  return (
-    <Fragment>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Fragment>
-  );
-};
+import HomeScreen from './src/screens/HomeScreen'
+import MapScreen from './src/screens/MapScreen'
+import SettingScreen from './src/screens/SettingScreen'
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+import stores from './src/stores'
+
+import { COLOR_MAIN } from './src/constants/color'
+import { IMAGE_HOME } from './src/constants/image';
+
+
+class App extends Component{
+  
+  componentDidMount = async () => {
+    if (Platform.OS === "android") {
+      const readStoragePerm = await PermissionsAndroid.check(
+        "android.permission.READ_EXTERNAL_STORAGE"
+      );
+      if (!readStoragePerm) {
+        await PermissionsAndroid.request(
+          "android.permission.READ_EXTERNAL_STORAGE"
+        ).then(res => {
+          if (res === "denied" || res === "never_ask_again") {
+            BackHandler.exitApp();
+          }
+        });
+      }
+      const writeStoragePerm = await PermissionsAndroid.check(
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      );
+      if (!writeStoragePerm) {
+        await PermissionsAndroid.request(
+          "android.permission.WRITE_EXTERNAL_STORAGE"
+        ).then(res => {
+          if (res === "denied" || res === "never_ask_again") {
+            BackHandler.exitApp();
+          }
+        });
+      }
+    }
+
+    const netInfo = await NetInfo.isConnected.fetch();
+
+    !netInfo &&
+    Alert.alert(
+      "알림",
+      "인터넷이 연결되어 있지 않습니다.\n앱을 종료합니다.",
+      [{ text: "확인", onPress: () => BackHandler.exitApp() }],
+      { cancelable: false }
+    );
+  };
+  
+  render(){
+    return (
+      <Provider {...stores}>
+        <AppContainer
+          onNavigationStateChange={(_prev, next) => {
+            currentIndex = next.index;
+          }}
+        />
+      </Provider>
+    );
+  }
+}
+
+const HomeStack = createStackNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+      tabBarOptions: {
+        activeTintColor: COLOR_MAIN,
+        labelStyle: {
+          fontSize: 12,
+        },
+        showIcon: true 
+      }
+    }
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  {
+    defaultNavigationOptions: ({
+      headerStyle: {
+        elevation: 0,
+        shadowOffset: { height: 0, width: 0 },
+        shadowOpacity: 0,
+        shadowRadius: 0,
+        backgroundColor: '#fff',
+        shadowColor: "transparent"
+      },
+    })
+  }
+)
+
+const MapStack = createStackNavigator(
+  {
+    Map: { screen: MapScreen },
   },
-  body: {
-    backgroundColor: Colors.white,
+  {
+    defaultNavigationOptions: ({
+      headerStyle: {
+        elevation: 0,
+        shadowOffset: { height: 0, width: 0 },
+        shadowOpacity: 0,
+        shadowRadius: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        shadowColor: "transparent"
+      }
+    })
+  }
+)
+
+const SettingStack = createStackNavigator(
+  {
+    Firend: { screen: SettingScreen },
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
+  {
+    defaultNavigationOptions: ({
+      headerStyle: {
+        elevation: 0,
+        shadowOffset: { height: 0, width: 0 },
+        shadowOpacity: 0,
+        shadowRadius: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        shadowColor: "transparent"
+      }
+    })
+  }
+)
+
+const MainSwitch = createBottomTabNavigator({
+  Home: HomeStack,
+  Map: MapStack,
+  Setting: SettingStack
+})
+const AppContainer = createAppContainer(MainSwitch);
 
 export default App;

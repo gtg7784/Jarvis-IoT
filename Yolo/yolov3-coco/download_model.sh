@@ -1,0 +1,1 @@
+wget --no-check-certificate https://pjreddie.com/media/files/yolov3-tiny.weights
