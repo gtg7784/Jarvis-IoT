@@ -161,15 +161,16 @@ if __name__ == '__main__':
 
 	else:
 		stream = io.BytesIO()
-
 		
 		with picamera.PiCamera() as camera:
+    		camera.resolution = (1024, 768)
 			camera.start_preview()
 			time.sleep(2)
 			with picamera.array.PiRGBArray(camera) as stream:
 				camera.capture(stream, format='bgr')
 				# At this point the image is available as stream.array
 				image = stream.array
+				frame = stream
 		
 		time.sleep(0.1)
 
@@ -178,13 +179,13 @@ if __name__ == '__main__':
 		# Infer real-time on webcam
 
 		while True:
-			height, width = image[:2]
+			height, width = frame.shape[:2]
 
 			if count == 0:
-				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, image, colors, labels, FLAGS)
+				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS)
 				count += 1
 			else:
-				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, image, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
+				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
 				count = (count + 1) % 6
 
 			cv2.imshow('Frame', image)
