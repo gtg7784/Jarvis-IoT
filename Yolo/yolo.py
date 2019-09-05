@@ -157,15 +157,15 @@ if __name__ == '__main__':
 
 	else:
 		vs = VideoStream(usePiCamera=args["picamera"] > 0).start()
-		time.sleep(2.0)
+		time.sleep(0.1)
 
 		count = 0
 
 		# Infer real-time on webcam
-		# vid = cv2.VideoCapture(0)
+		vid = cv2.VideoCapture(vs)
 
 		while True:
-			_, frame = vs.read()[0], vs.read()[1]
+			_, frame = vs.read()
 			height, width = 480, 640
 
 			if count == 0:

@@ -75,9 +75,7 @@ def infer_image(net, layer_names, height, width, img, colors, labels, FLAGS,
 
         # Getting the outputs from the output layers
         start = time.time()
-        print(layer_names)
         outs = net.forward(layer_names)
-        print(outs)
         end = time.time()
 
         if FLAGS.show_time:
