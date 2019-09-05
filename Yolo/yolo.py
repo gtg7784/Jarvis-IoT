@@ -178,7 +178,7 @@ if __name__ == '__main__':
 		# Infer real-time on webcam
 
 		while True:
-			height, width = frame.shape[:2]
+			height, width = 1920, 1080
 
 			if count == 0:
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS)
