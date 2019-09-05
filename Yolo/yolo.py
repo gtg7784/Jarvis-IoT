@@ -165,9 +165,8 @@ if __name__ == '__main__':
 		# vid = cv2.VideoCapture(0)
 
 		while True:
-			print(vs.read().shape[1])
 			_, frame = vs.read()
-			height, width = vs.read().shape[0], vs.read().shape[1]
+			height, width = 480, 640
 
 			if count == 0:
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
