@@ -5,14 +5,6 @@ import subprocess
 import time
 import os
 
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-
-camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 30
-rawCapture = PiRGBArray(camera, size=(640, 480))
-
 time.sleep(0.1)
 
 def show_image(img):

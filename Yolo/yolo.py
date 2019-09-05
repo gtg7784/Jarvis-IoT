@@ -1,11 +1,15 @@
 
 import numpy as np
 import argparse
-import cv2 as cv
+import cv2
 import subprocess
 import time
 import os
 from yolo_utils import infer_image, show_image
+
+
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 FLAGS = []
 
@@ -26,7 +30,7 @@ if __name__ == '__main__':
 
 	parser.add_argument('-cfg', '--config',
 		type=str,
-		default='./yolov3-coco/yolov3.cfg',
+		default='./yolov3-coco/yolov3-tiny.cfg',
 		help='Path to the configuration file for the YOLOv3 model.')
 
 	parser.add_argument('-i', '--image-path',
@@ -86,7 +90,7 @@ if __name__ == '__main__':
 	colors = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
 
 	# Load the weights and configutation to form the pretrained YOLOv3 model
-	net = cv.dnn.readNetFromDarknet(FLAGS.config, FLAGS.weights)
+	net = cv2.dnn.readNetFromDarknet(FLAGS.config, FLAGS.weights)
 
 	# Get the output layer names of the model
 	layer_names = net.getLayerNames()
@@ -102,6 +106,7 @@ if __name__ == '__main__':
 		# Read the image
 		try:
 			img = cv.imread(FLAGS.image_path)
+			assert not isinstance(image,type(None)), 'image not found'
 			height, width = img.shape[:2]
 		except:
 			raise 'Image cannot be loaded!\n\
@@ -114,7 +119,7 @@ if __name__ == '__main__':
 	elif FLAGS.video_path:
 		# Read the video
 		try:
-			vid = cv.VideoCapture(FLAGS.video_path)
+			vid = cv2.VideoCapture(FLAGS.video_path)
 			height, width = None, None
 			writer = None
 		except:
@@ -136,8 +141,8 @@ if __name__ == '__main__':
 
 				if writer is None:
 					# Initialize the video writer
-					fourcc = cv.VideoWriter_fourcc(*"MJPG")
-					writer = cv.VideoWriter(FLAGS.video_output_path, fourcc, 30, 
+					fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+					writer = cv2.VideoWriter(FLAGS.video_output_path, fourcc, 30, 
 						            (frame.shape[1], frame.shape[0]), True)
 
 
@@ -152,7 +157,7 @@ if __name__ == '__main__':
 		# Infer real-time on webcam
 		count = 0
 
-		vid = cv.VideoCapture(0)
+		vid = cv2.VideoCapture(0)
 		while True:
 			_, frame = vid.read()
 			height, width = frame.shape[:2]
@@ -165,10 +170,30 @@ if __name__ == '__main__':
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
 		    						height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
 				count = (count + 1) % 6
+				camera = PiCamera()
 
-			cv.imshow('webcam', frame)
+			camera = PiCamera()
+			camera.resolution = (640, 480)
+			camera.framerate = 32
+			rawCapture = PiRGBArray(camera, size=(640, 480))
 
-			if cv.waitKey(1) & 0xFF == ord('q'):
-				break
-		vid.release()
-		cv.destroyAllWindows()
+			time.sleep(0.1)
+
+			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+				# grab the raw NumPy array representing the image, then initialize the timestamp
+				# and occupied/unoccupied text
+				image = frame.array
+			
+				# show the frame
+				cv2.imshow("Frame", image)
+				key = cv2.waitKey(1) & 0xFF
+			
+				# clear the stream in preparation for the next frame
+				rawCapture.truncate(0)
+			
+				# if the `q` key was pressed, break from the loop
+				if key == ord("q"):
+					break
+
+				vid.release()
+				cv2.destroyAllWindows()
