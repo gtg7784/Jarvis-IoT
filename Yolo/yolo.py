@@ -167,7 +167,7 @@ if __name__ == '__main__':
 		while True:
 			print(vs.read().shape)
 			_, frame = vs.read()
-			height, width = frame.shape[:2]
+			height, width = frame.shape[0], frame.shape[1]
 
 			if count == 0:
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
