@@ -188,9 +188,9 @@ if __name__ == '__main__':
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
 				count = (count + 1) % 6
 
-			cv2.imshow('Frame', image)
+			cv2.imshow('Frame', frame)
 
 			if cv2.waitKey(1) & 0xFF == ord('q'):
 				break
-		vid.release()
+		# vid.release()
 		cv2.destroyAllWindows()
