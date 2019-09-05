@@ -169,12 +169,10 @@ if __name__ == '__main__':
 			height, width = 480, 640
 
 			if count == 0:
-				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
-		    						height, width, frame, colors, labels, FLAGS)
+				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS)
 				count += 1
 			else:
-				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
-		    						height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
+				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
 				count = (count + 1) % 6
 
 			cv2.imshow('Frame', frame)
