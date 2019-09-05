@@ -161,9 +161,9 @@ if __name__ == '__main__':
 			_, frame = vid.read()
 			try:
 				height, width = frame.shape[:2]
-			except:
-				raise 'Image cannot be loaded!\n\
-								Please check the path provided!'
+			except AttributeError:
+				print("shape not found")
+				#code to move to next frame
 
 			if count == 0:
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
