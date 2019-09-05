@@ -156,7 +156,7 @@ class VideoStream:
         else:
             self.stream = WebcamVideoStream(src=src)
 
-    def starting(self):
+    def start(self):
         # start the threaded video stream
         return self.stream.starting()
  

@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
 
 	else:
-		vs = VideoStream(usePiCamera=args["picamera"] > 0).starting()
+		vs = VideoStream(usePiCamera=args["picamera"] > 0).start()
 		time.sleep(2.0)
 
 		count = 0
