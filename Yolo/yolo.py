@@ -170,7 +170,6 @@ if __name__ == '__main__':
 
 			with picamera.array.PiRGBArray(camera) as stream:
 				camera.start_preview()
-				time.sleep(2)
 				camera.capture(stream, format='jpeg')
 			
 			# Construct a numpy array from the stream
@@ -180,8 +179,7 @@ if __name__ == '__main__':
 			# OpenCV returns an array with data in BGR order. If you want RGB instead
 			# use the following...
 			image = image[:, :, ::-1]
-		
-		time.sleep(0.1)
+
 
 		count = 0
 
