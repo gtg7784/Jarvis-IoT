@@ -153,50 +153,45 @@ if __name__ == '__main__':
 
 
 	else:
-		# Infer real-time on webcam
-		count = 0
+		camera = PiCamera()
+		camera.resolution = (640, 480)
+		camera.framerate = 32
+		rawCapture = PiRGBArray(camera, size=(640, 480))
 
-		vid = cv2.VideoCapture(0)
-		while True:
-			_, frame = vid.read()
-			try:
-				height, width = frame.shape[:2]
-			except AttributeError:
-				print("shape not found")
-				#code to move to next frame
+		# # Infer real-time on webcam
+		# count = 0
 
-			if count == 0:
-				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
-		    						height, width, frame, colors, labels, FLAGS)
-				count += 1
-			else:
-				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
-		    						height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
-				count = (count + 1) % 6
-				camera = PiCamera()
+		# vid = cv2.VideoCapture(0)
+		# while True:
+		# 	_, frame = vid.read()
+		# 	height, width = frame.shape[:2]
 
-			camera = PiCamera()
-			camera.resolution = (640, 480)
-			camera.framerate = 32
-			rawCapture = PiRGBArray(camera, size=(640, 480))
+		# 	if count == 0:
+		# 		frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
+		#     						height, width, frame, colors, labels, FLAGS)
+		# 		count += 1
+		# 	else:
+		# 		frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
+		#     						height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
+		# 		count = (count + 1) % 6
 
-			time.sleep(0.1)
+		time.sleep(0.1)
 
-			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-				# grab the raw NumPy array representing the image, then initialize the timestamp
-				# and occupied/unoccupied text
-				image = frame.array
-			
-				# show the frame
-				cv2.imshow("Frame", image)
-				key = cv2.waitKey(1) & 0xFF
-			
-				# clear the stream in preparation for the next frame
-				rawCapture.truncate(0)
-			
-				# if the `q` key was pressed, break from the loop
-				if key == ord("q"):
-					break
+		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+			# grab the raw NumPy array representing the image, then initialize the timestamp
+			# and occupied/unoccupied text
+			image = frame.array
+		
+			# show the frame
+			cv2.imshow("Frame", image)
+			key = cv2.waitKey(1) & 0xFF
+		
+			# clear the stream in preparation for the next frame
+			rawCapture.truncate(0)
+		
+			# if the `q` key was pressed, break from the loop
+			if key == ord("q"):
+				break
 
-				vid.release()
-				cv2.destroyAllWindows()
+			vid.release()
+			cv2.destroyAllWindows()
