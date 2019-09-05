@@ -5,8 +5,10 @@ import cv2
 import subprocess
 import time
 import os
+import picamera
+import io
 
-from yolo_utils import infer_image, show_image, FileVideoStream
+from yolo_utils import infer_image, show_image
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--picamera", type=int, default=-1,
@@ -156,17 +158,29 @@ if __name__ == '__main__':
 
 
 	else:
-		vs = FileVideoStream(usePiCamera=args["picamera"] > 0).start()
+		stream = io.BytesIO()
+
+		with picamera.PiCamera() as camera:
+			camera.start_preview()
+			time.sleep(2)
+			camera.capture(stream, format='jpeg')
+		# Construct a numpy array from the stream
+		data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+		# "Decode" the image from the array, preserving colour
+		image = cv2.imdecode(data, 1)
+		# OpenCV returns an array with data in BGR order. If you want RGB instead
+		# use the following...
+		image = image[:,:,::-1]
+		
 		time.sleep(0.1)
 
 		count = 0
 
 		# Infer real-time on webcam
-		vid = cv2.VideoCapture(vs)
 
 		while True:
-			_, frame = vid.read()
-			height, width = 480, 640
+			_, frame = image.read()
+			height, width = frame.shape[:2]
 
 			if count == 0:
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS)
