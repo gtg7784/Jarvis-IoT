@@ -6,7 +6,7 @@ import subprocess
 import time
 import os
 
-from yolo_utils import infer_image, show_image, VideoStream
+from yolo_utils import infer_image, show_image, FileVideoStream
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--picamera", type=int, default=-1,
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
 
 	else:
-		vs = VideoStream(usePiCamera=args["picamera"] > 0).start()
+		vs = FileVideoStream(usePiCamera=args["picamera"] > 0).start()
 		time.sleep(0.1)
 
 		count = 0
