@@ -158,7 +158,7 @@ class VideoStream:
 
     def start(self):
         # start the threaded video stream
-        return self.stream.starting()
+        return self.stream.start()
  
     def update(self):
 		# grab the next frame from the stream
