@@ -5,10 +5,14 @@ import cv2
 import subprocess
 import time
 import os
-from yolo_utils import infer_image, show_image
+from imutils.video import VideoStream
 
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+from yolo_utils import infer_image, show_image, VideoStream
+
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--picamera", type=int, default=-1,
+	help="whether or not the Raspberry Pi camera should be used")
+args = vars(ap.parse_args())
 
 FLAGS = []
 
@@ -153,45 +157,30 @@ if __name__ == '__main__':
 
 
 	else:
-		camera = PiCamera()
-		camera.resolution = (640, 480)
-		camera.framerate = 32
-		rawCapture = PiRGBArray(camera, size=(640, 480))
+		vs = VideoStream(usePiCamera=args["picamera"] > 0).start()
+		time.sleep(2.0)
 
-		# # Infer real-time on webcam
-		# count = 0
+		count = 0
 
+		# Infer real-time on webcam
 		# vid = cv2.VideoCapture(0)
-		# while True:
-		# 	_, frame = vid.read()
-		# 	height, width = frame.shape[:2]
 
-		# 	if count == 0:
-		# 		frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
-		#     						height, width, frame, colors, labels, FLAGS)
-		# 		count += 1
-		# 	else:
-		# 		frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
-		#     						height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
-		# 		count = (count + 1) % 6
+		while True:
+			_, frame = vs.read()
+			height, width = frame.shape[:2]
 
-		time.sleep(0.1)
+			if count == 0:
+				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
+		    						height, width, frame, colors, labels, FLAGS)
+				count += 1
+			else:
+				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
+		    						height, width, frame, colors, labels, FLAGS, boxes, confidences, classids, idxs, infer=False)
+				count = (count + 1) % 6
 
-		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-			# grab the raw NumPy array representing the image, then initialize the timestamp
-			# and occupied/unoccupied text
-			image = frame.array
-		
-			# show the frame
-			cv2.imshow("Frame", image)
-			key = cv2.waitKey(1) & 0xFF
-		
-			# clear the stream in preparation for the next frame
-			rawCapture.truncate(0)
-		
-			# if the `q` key was pressed, break from the loop
-			if key == ord("q"):
+			cv2.imshow('Frame', frame)
+
+			if cv2.waitKey(1) & 0xFF == ord('q'):
 				break
-
-				# vid.release()
-				cv2.destroyAllWindows()
+		vid.release()
+		cv2.destroyAllWindows()
