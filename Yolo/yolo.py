@@ -6,6 +6,8 @@ import subprocess
 import time
 import os
 import picamera
+import picamera.array
+
 import io
 
 from yolo_utils import infer_image, show_image
