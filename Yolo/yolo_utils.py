@@ -4,7 +4,8 @@ import cv2
 import subprocess
 import time
 import os
-from webcamvideostream import WebcamVideoStream
+
+from imutils import WebcamVideoStream
 
 def show_image(img):
     cv2.imshow("Image", img)
