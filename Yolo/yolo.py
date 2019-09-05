@@ -165,8 +165,9 @@ if __name__ == '__main__':
 		# vid = cv2.VideoCapture(0)
 
 		while True:
+			print(vs)
+			print(vs.read())
 			_, frame = vs.read()
-			print(frame, type(frame))
 			height, width = frame.shape[:2]
 
 			if count == 0:
