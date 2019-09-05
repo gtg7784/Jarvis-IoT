@@ -5,8 +5,6 @@ import subprocess
 import time
 import os
 
-from imutils import WebcamVideoStream
-
 def show_image(img):
     cv2.imshow("Image", img)
     cv2.waitKey(0)
