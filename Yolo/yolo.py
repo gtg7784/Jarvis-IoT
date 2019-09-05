@@ -166,10 +166,17 @@ if __name__ == '__main__':
 			camera.start_preview()
 			time.sleep(2)
 			with picamera.array.PiRGBArray(camera) as stream:
-				camera.capture(stream, format='bgr')
-				# At this point the image is available as stream.array
-				image = stream.array
-				frame = stream
+				camera.start_preview()
+				time.sleep(2)
+				camera.capture(stream, format='jpeg')
+			
+			# Construct a numpy array from the stream
+			data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+			# "Decode" the image from the array, preserving colour
+			image = cv2.imdecode(data, 1)
+			# OpenCV returns an array with data in BGR order. If you want RGB instead
+			# use the following...
+			image = image[:, :, ::-1]
 		
 		time.sleep(0.1)
 
@@ -178,7 +185,8 @@ if __name__ == '__main__':
 		# Infer real-time on webcam
 
 		while True:
-			height, width = 1920, 1080
+			_, frame = image.read()
+			height, width = frame.shape[:2]
 
 			if count == 0:
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS)
