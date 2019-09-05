@@ -165,7 +165,7 @@ if __name__ == '__main__':
 		# vid = cv2.VideoCapture(0)
 
 		while True:
-			_, frame = vs.read()
+			_, frame = vs.read()[0], vs.read()[1]
 			height, width = 480, 640
 
 			if count == 0:
