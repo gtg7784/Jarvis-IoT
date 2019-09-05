@@ -163,7 +163,6 @@ if __name__ == '__main__':
 		stream = io.BytesIO()
 		
 		with picamera.PiCamera() as camera:
-    		camera.resolution = (1024, 768)
 			camera.start_preview()
 			time.sleep(2)
 			with picamera.array.PiRGBArray(camera) as stream:
