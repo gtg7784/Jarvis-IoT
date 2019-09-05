@@ -136,9 +136,6 @@ if __name__ == '__main__':
 
 				if width is None or height is None:
 					height, width = frame.shape[:2]
-					except:
-						raise 'Image cannot be loaded!\n\
-										Please check the path provided!'
 
 				frame, _, _, _, _ = infer_image(net, layer_names, height, width, frame, colors, labels, FLAGS)
 
@@ -164,10 +161,6 @@ if __name__ == '__main__':
 		while True:
 			_, frame = vid.read()
 			height, width = frame.shape[:2]
-			
-			except:
-				raise 'Image cannot be loaded!\n\
-								Please check the path provided!'
 
 			if count == 0:
 				frame, boxes, confidences, classids, idxs = infer_image(net, layer_names, \
