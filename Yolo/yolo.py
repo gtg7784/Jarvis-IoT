@@ -166,7 +166,7 @@ if __name__ == '__main__':
 			camera.start_preview()
 			time.sleep(2)
 			camera.resolution = (640, 480)
-			camera.framerate = 60
+			camera.framerate = 32
 
 			with picamera.array.PiRGBArray(camera) as stream:
 				camera.start_preview()
