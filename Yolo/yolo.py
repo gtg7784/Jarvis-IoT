@@ -7,14 +7,8 @@ import time
 import os
 from yolo_utils import infer_image, show_image
 
-
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--image", required=True,
-	help="path to the image file")
-args = vars(ap.parse_args())
 
 FLAGS = []
 
