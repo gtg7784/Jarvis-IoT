@@ -5,7 +5,6 @@ import cv2
 import subprocess
 import time
 import os
-from imutils.video import VideoStream
 
 from yolo_utils import infer_image, show_image, VideoStream
 
